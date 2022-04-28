@@ -3,7 +3,16 @@ const { google } = require("googleapis");
 
 const app = express();
 
+app.set("view engine", "ejs");
+app.use(express.urlencoded({ extended: true }));
+
 app.get("/", async (req, res) => {
+  res.render("index");
+});
+
+app.post("/", async (req, res) => {
+  const { request, name } = req.body;
+
   const auth = new google.auth.GoogleAuth({
     keyFile: "credentials.json",
     scopes: "https://www.googleapis.com/auth/spreadsheets",
@@ -37,13 +46,12 @@ app.get("/", async (req, res) => {
     valueInputOption: "USER_ENTERED",
     resource: {
       values: [
-        ["add a cell data", "test"],
-        ["add a cell data2", "test2"],
+        [request, name],
       ],
     },
   });
 
-  res.send(detRows.data);
+  res.send("Successfully submitted");
 });
 
 app.listen(1337, (req, res) => console.log("running on 1337"));
